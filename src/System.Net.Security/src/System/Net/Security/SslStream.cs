@@ -110,6 +110,12 @@ namespace System.Net.Security
         }
 
         public virtual IAsyncResult BeginAuthenticateAsClient(string targetHost, X509CertificateCollection clientCertificates,
+                                                            bool checkCertificateRevocation, AsyncCallback asyncCallback, object asyncState)
+        {
+            return BeginAuthenticateAsClient(targetHost, clientCertificates, SecurityProtocol.DefaultSecurityProtocols, checkCertificateRevocation, asyncCallback, asyncState);
+        }
+
+        public virtual IAsyncResult BeginAuthenticateAsClient(string targetHost, X509CertificateCollection clientCertificates,
                                                             SslProtocols enabledSslProtocols, bool checkCertificateRevocation,
                                                             AsyncCallback asyncCallback, object asyncState)
         {
@@ -135,6 +141,12 @@ namespace System.Net.Security
             return BeginAuthenticateAsServer(serverCertificate, false, SecurityProtocol.DefaultSecurityProtocols, false,
                                                           asyncCallback,
                                                             asyncState);
+        }
+
+        public virtual IAsyncResult BeginAuthenticateAsServer(X509Certificate serverCertificate, bool clientCertificateRequired,
+                                                            bool checkCertificateRevocation, AsyncCallback asyncCallback, object asyncState)
+        {
+            return BeginAuthenticateAsServer(serverCertificate, clientCertificateRequired, SecurityProtocol.DefaultSecurityProtocols, checkCertificateRevocation, asyncCallback, asyncState);
         }
 
         public virtual IAsyncResult BeginAuthenticateAsServer(X509Certificate serverCertificate, bool clientCertificateRequired,
@@ -183,6 +195,11 @@ namespace System.Net.Security
             AuthenticateAsClient(targetHost, new X509CertificateCollection(), SecurityProtocol.DefaultSecurityProtocols, false);
         }
 
+        public virtual void AuthenticateAsClient(string targetHost, X509CertificateCollection clientCertificates, bool checkCertificateRevocation)
+        {
+            AuthenticateAsClient(targetHost, clientCertificates, SecurityProtocol.DefaultSecurityProtocols, checkCertificateRevocation);
+        }
+
         public virtual void AuthenticateAsClient(string targetHost, X509CertificateCollection clientCertificates, SslProtocols enabledSslProtocols, bool checkCertificateRevocation)
         {
             SecurityProtocol.ThrowOnNotAllowed(enabledSslProtocols);
@@ -193,6 +210,11 @@ namespace System.Net.Security
         public virtual void AuthenticateAsServer(X509Certificate serverCertificate)
         {
             AuthenticateAsServer(serverCertificate, false, SecurityProtocol.DefaultSecurityProtocols, false);
+        }
+
+        public virtual void AuthenticateAsServer(X509Certificate serverCertificate, bool clientCertificateRequired, bool checkCertificateRevocation)
+        {
+            AuthenticateAsServer(serverCertificate, clientCertificateRequired, SecurityProtocol.DefaultSecurityProtocols, checkCertificateRevocation);
         }
 
         public virtual void AuthenticateAsServer(X509Certificate serverCertificate, bool clientCertificateRequired, SslProtocols enabledSslProtocols, bool checkCertificateRevocation)
