@@ -11,17 +11,6 @@
     <OutputType>Library</OutputType>
     <NugetTargetMoniker Condition="'$(TargetGroup)'==''">.NETStandard,Version=v1.7</NugetTargetMoniker>
   </PropertyGroup>
-  <!-- TODO: Folder logic needs moved into common targets: https://github.com/dotnet/corefx/issues/11468 -->
-  <ItemGroup Condition="'$(TargetGroup)'=='netstandard1.7'">
-    <TestNugetTargetMoniker Include="$(NugetTargetMoniker)">
-      <Folder>ns1.7-netcoreapp1.1</Folder>
-    </TestNugetTargetMoniker>
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetGroup)'=='netcoreapp1.1'">
-    <TestNugetTargetMoniker Include="$(NugetTargetMoniker)">
-      <Folder>netcoreapp1.1</Folder>
-    </TestNugetTargetMoniker>
-  </ItemGroup>
   <PropertyGroup Condition=" '$(TargetsUnix)' == 'true' ">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -106,11 +95,11 @@
     <Compile Include="$(CommonTestPath)\System\Threading\Tasks\TaskTimeoutExtensions.cs">
       <Link>Common\System\Threading\Tasks\TaskTimeoutExtensions.cs</Link>
     </Compile>
-  </ItemGroup>
+    </ItemGroup>
   <ItemGroup Condition="'$(TargetGroup)'=='netcoreapp1.1'">
     <!-- TODO: Add net463 to the condition after the TFM gets updated to the actual .Net 4.6.3.-->
     <Compile Include="SslStreamAlertsTest.cs" />
-  </ItemGroup>
+  </ItemGroup>  
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true' ">
     <Compile Include="IdentityValidator.Windows.cs" />
   </ItemGroup>
@@ -157,7 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- TODO: fix once package testing is possible -->
-    <ProjectReference Include="..\..\src\System.Net.Security.pkgproj">
+    <ProjectReference Include="..\..\pkg\System.Net.Security.pkgproj">
       <Project>{89F37791-6254-4D60-AB96-ACD3CCA0E771}</Project>
       <Name>System.Net.Security</Name>
     </ProjectReference>
