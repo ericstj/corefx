@@ -99,7 +99,7 @@
   <ItemGroup Condition="'$(TargetGroup)'=='netcoreapp1.1'">
     <!-- TODO: Add net463 to the condition after the TFM gets updated to the actual .Net 4.6.3.-->
     <Compile Include="SslStreamAlertsTest.cs" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup Condition=" '$(TargetsWindows)' == 'true' ">
     <Compile Include="IdentityValidator.Windows.cs" />
   </ItemGroup>

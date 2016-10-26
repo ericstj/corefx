@@ -11,6 +11,10 @@
   <ItemGroup>
     <Compile Include="ServicePointManagerTest.cs" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetGroup)'=='netcoreapp1.1'">
+    <!-- TODO: Add net463 to the condition after the TFM gets updated to the actual .Net 4.6.3.-->
+    <Compile Include="TlsSystemDefault.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pkg\System.Net.ServicePoint.pkgproj">
       <Name>System.Net.ServicePoint</Name>
@@ -19,10 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- TODO: Remove this reference once packages are updated -->
-    <ProjectReference Include="..\..\System.Net.Requests\pkg\System.Net.Requests.pkgproj" />
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />
 </Project>
