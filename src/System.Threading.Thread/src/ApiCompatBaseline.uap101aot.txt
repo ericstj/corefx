@@ -1,0 +1,9 @@
+TypesMustExist : Type 'System.Threading.ParameterizedThreadStart' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'System.Threading.Thread' does not exist in the implementation but it does exist in the contract.
+CannotRemoveBaseTypeOrInterface : Type 'System.Threading.ThreadExceptionEventHandler' does not implement interface 'System.Runtime.Serialization.ISerializable' in the implementation but it does in the contract.
+TypesMustExist : Type 'System.Threading.ThreadInterruptedException' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'System.Threading.ThreadStart' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'System.Threading.ThreadStartException' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'System.Threading.ThreadState' does not exist in the implementation but it does exist in the contract.
+TypesMustExist : Type 'System.Threading.ThreadStateException' does not exist in the implementation but it does exist in the contract.
+
