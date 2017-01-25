@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.props))\dir.props" />
+  <PropertyGroup>
+    <BuildAllConfigurations>true</BuildAllConfigurations>
+  </PropertyGroup>
   <ItemGroup>
-    <Project Include="$(MSBuildThisFileDirectory)*Tuple\ref\*.*proj">
+    <Project Include="$(MSBuildStartupDirectory)\*.*proj">
       <AdditionalMetadata>ConfigurationGroup=$(ConfigurationGroup)</AdditionalMetadata>
     </Project>
   </ItemGroup>
