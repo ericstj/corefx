@@ -59,8 +59,7 @@
   <ItemGroup Condition="'$(TargetGroup)' == 'net46' OR '$(TargetGroup)' == 'netfx'">
     <Compile Include="AssemblyInfo.Net46.cs" />
     <Reference Include="mscorlib" />
-    <Reference Include="System" />    
-    <Reference Include="System.Runtime" />    
-  </ItemGroup>      
+    <Reference Include="System" />
+  </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />
 </Project>

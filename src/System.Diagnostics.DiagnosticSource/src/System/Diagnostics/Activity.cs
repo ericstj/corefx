@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Security;
-using System.Security.Permissions;
 using System.Threading;
 
 namespace System.Diagnostics
