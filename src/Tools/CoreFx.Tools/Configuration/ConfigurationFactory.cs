@@ -26,14 +26,16 @@ namespace Microsoft.DotNet.Build.Tasks
 
         public Configuration IdentityConfiguration { get; }
 
-        public ConfigurationFactory(ITaskItem[] properties, ITaskItem[] propertyValues)
+        public ConfigurationFactory(ITaskItem[] propertyItems, ITaskItem[] propertyValueItems)
         {
-            Properties = properties.Select(p => new PropertyInfo(p))
+            Properties = propertyItems.Select(p => new PropertyInfo(p))
                 .ToDictionary(p => p.Name, p => p);
             PropertiesByOrder = Properties.Values.OrderBy(p => p.Order).ToArray();
             PropertiesByPrecedence = Properties.Values.OrderBy(p => p.Precedence).ToArray();
 
-            var propertyValueGrouping = propertyValues.Select(v => new PropertyValue(v, Properties)).GroupBy(p => p.Value);
+            var propertyValues = propertyValueItems.Select(v => new PropertyValue(v, Properties));
+            var propertyValuePairs = propertyValues.SelectMany(v => v.AllValues.Select(a => new KeyValuePair<string, PropertyValue>(a, v)));
+            var propertyValueGrouping = propertyValuePairs.GroupBy(p => p.Key, p => p.Value);
 
             var duplicateValueGrouping = propertyValueGrouping.Where(g => g.Count() > 1);
 
@@ -48,7 +50,7 @@ namespace Microsoft.DotNet.Build.Tasks
             
             PropertyValues = AllPropertyValues.Values
                 .GroupBy(v => v.Property)
-                .ToDictionary(g => g.Key, g => g.ToArray());
+                .ToDictionary(g => g.Key, g => g.Distinct().ToArray());
 
             // connect the graph
             foreach (var propertyValue in AllPropertyValues.Values)

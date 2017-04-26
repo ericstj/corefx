@@ -22,6 +22,7 @@
       <NuGetTargetMoniker>UAP,Version=v10.1</NuGetTargetMoniker>
       <NuGetTargetMonikerShort>uap10.1</NuGetTargetMonikerShort>
       <UWPCompatible>true</UWPCompatible>
+      <Aliases>uapaot</Aliases>
       <Imports>netcore50aot</Imports>
       <CompatibleWith>uap101;netstandard2.0</CompatibleWith>
     </TargetGroups>
@@ -29,25 +30,9 @@
       <NuGetTargetMoniker>UAP,Version=v10.1</NuGetTargetMoniker>
       <NuGetTargetMonikerShort>uap10.1</NuGetTargetMonikerShort>
       <UWPCompatible>true</UWPCompatible>
+      <Aliases>uap</Aliases>
       <Imports>netcore50</Imports>
       <CompatibleWith>netstandard2.0</CompatibleWith>
-    </TargetGroups>
-    <!-- uap is an alias for uap10.1 any/coreclr runtime -->
-    <TargetGroups Include="uap">
-      <NuGetTargetMoniker>UAP,Version=v10.1</NuGetTargetMoniker>
-      <NuGetTargetMonikerShort>uap10.1</NuGetTargetMonikerShort>
-      <UWPCompatible>true</UWPCompatible>
-      <Imports>uap101</Imports>
-      <CompatibleWith>netstandard</CompatibleWith>
-    </TargetGroups>
-    <!-- uapaot is an alias for uap10.1, aot runtime -->
-    <TargetGroups Include="uapaot">
-      <PackageTargetRuntimeSuffix>aot</PackageTargetRuntimeSuffix>
-      <NuGetTargetMoniker>UAP,Version=v10.1</NuGetTargetMoniker>
-      <NuGetTargetMonikerShort>uap10.1</NuGetTargetMonikerShort>
-      <UWPCompatible>true</UWPCompatible>
-      <Imports>uap101aot</Imports>
-      <CompatibleWith>uap;netstandard</CompatibleWith>
     </TargetGroups>
     <TargetGroups Include="netstandard1.0">
       <NuGetTargetMoniker>.NETStandard,Version=v1.0</NuGetTargetMoniker>
@@ -107,19 +92,11 @@
     <TargetGroups Include="netstandard2.0">
       <NuGetTargetMoniker>.NETStandard,Version=v2.0</NuGetTargetMoniker>
       <NuGetTargetMonikerShort>netstandard2.0</NuGetTargetMonikerShort>
+      <Aliases>netstandard</Aliases>
       <!-- By default, netstandard libraries will be held to the UWP compatibility bar;
            set this to false in the project to force otherwise. -->
       <UWPCompatible>true</UWPCompatible>
       <Imports>netstandard1.6</Imports>
-    </TargetGroups>
-    <!-- netstandard is an alias for netstandard2.0 -->
-    <TargetGroups Include="netstandard">
-      <NuGetTargetMoniker>.NETStandard,Version=v2.0</NuGetTargetMoniker>
-      <NuGetTargetMonikerShort>netstandard2.0</NuGetTargetMonikerShort>
-      <!-- By default, netstandard libraries will be held to the UWP compatibility bar;
-           set this to false in the project to force otherwise. -->
-      <UWPCompatible>true</UWPCompatible>
-      <Imports>netstandard2.0</Imports>
     </TargetGroups>
     <TargetGroups Include="netcoreapp1.0">
       <NuGetTargetMoniker>.NETCoreApp,Version=v1.0</NuGetTargetMoniker>
@@ -129,15 +106,9 @@
     <TargetGroups Include="netcoreapp2.0">
       <NuGetTargetMoniker>.NETCoreApp,Version=v2.0</NuGetTargetMoniker>
       <NuGetTargetMonikerShort>netcoreapp2.0</NuGetTargetMonikerShort>
+      <Aliases>netcoreapp</Aliases>
       <Imports>netcoreapp1.0</Imports>
       <CompatibleWith>netstandard2.0</CompatibleWith>
-    </TargetGroups>
-    <!-- netcoreapp is an alias for netcoreapp2.0 -->
-    <TargetGroups Include="netcoreapp">
-      <NuGetTargetMoniker>.NETCoreApp,Version=v2.0</NuGetTargetMoniker>
-      <NuGetTargetMonikerShort>netcoreapp2.0</NuGetTargetMonikerShort>
-      <Imports>netcoreapp2.0</Imports>
-      <CompatibleWith>netstandard</CompatibleWith>
     </TargetGroups>
     <TargetGroups Include="netcoreapp1.2">
       <NuGetTargetMoniker>.NETCoreApp,Version=v1.2</NuGetTargetMoniker>
@@ -171,15 +142,8 @@
       <TargetingPackNugetPackageId>Microsoft.TargetingPack.NETFramework.v4.6.1</TargetingPackNugetPackageId>
       <NuGetTargetMoniker>.NETFramework,Version=v4.6.1</NuGetTargetMoniker>
       <NuGetTargetMonikerShort>net461</NuGetTargetMonikerShort>
+      <Aliases>netfx</Aliases>
       <Imports>net46</Imports>
-      <CompatibleWith>netstandard</CompatibleWith>
-    </TargetGroups>
-    <!-- netfx is an alias for net461 since that's our primary target as it added ns2.0 support -->
-    <TargetGroups Include="netfx">
-      <TargetingPackNugetPackageId>Microsoft.TargetingPack.NETFramework.v4.6.1</TargetingPackNugetPackageId>
-      <NuGetTargetMoniker>.NETFramework,Version=v4.6.1</NuGetTargetMoniker>
-      <NuGetTargetMonikerShort>net461</NuGetTargetMonikerShort>
-      <Imports>net461</Imports>
       <CompatibleWith>netstandard</CompatibleWith>
     </TargetGroups>
     <TargetGroups Include="net462">

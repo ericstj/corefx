@@ -31,42 +31,83 @@ namespace Microsoft.DotNet.Build.Tasks
         /// <summary>
         /// Constructs a configuration string from this configuration
         /// </summary>
-        /// <param name="allowDefaults">true to omit default values from configuration string</param>
+        /// <param name="omitDefaults">true to omit default values from configuration string</param>
+        /// <param name="includeInsignificant">true to include insignificant values in the configuration string</param>
         /// <param name="encounteredDefault">true if a default value was omitted</param>
         /// <returns>configuration string</returns>
-        private string GetConfigurationString(bool allowDefaults, bool includeInsignificant, out bool encounteredDefault)
+        private string GetConfigurationString(bool omitDefaults, bool includeInsignificant, out bool encounteredDefault)
         {
             encounteredDefault = false;
             var configurationBuilder = new StringBuilder();
             foreach (var value in Values)
             {
-                if (value.Property.Independent)
+                if (omitDefaults && value == value.Property.DefaultValue)
                 {
-                    // skip independent properties
-                    continue;
-                }
-
-                if (allowDefaults && value == value.Property.DefaultValue)
-                {
-                    // skip default value
                     encounteredDefault = true;
-                    continue;
                 }
 
-                if (!includeInsignificant && value.Property.Insignificant)
+                if (ShouldIncludeValue(value, omitDefaults, includeInsignificant))
                 {
-                    // skip insignificant properties
-                    continue;
+                    if (configurationBuilder.Length > 0)
+                    {
+                        configurationBuilder.Append(ConfigurationFactory.PropertySeperator);
+                    }
+                    configurationBuilder.Append(value.Value);
                 }
-
-                if (configurationBuilder.Length > 0)
-                {
-                    configurationBuilder.Append(ConfigurationFactory.PropertySeperator);
-                }
-                configurationBuilder.Append(value.Value);
             }
 
             return configurationBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Constructs configuration strings from this configuration, including all perumutatiosns of aliases.
+        /// </summary>
+        /// <param name="omitDefaults">true to omit default values from configuration string</param>
+        /// <param name="includeInsignificant">true to include insignificant values in the configuration string</param>
+        /// <param name="encounteredDefault">true if a default value was omitted</param>
+        /// <returns>all configuration strings</returns>
+        private IEnumerable<string> GetConfigurationStringsWithAliases(bool omitDefaults, bool includeInsignificant, out bool encounteredDefault)
+        {
+            encounteredDefault = false;
+            // start with an empty enumerable
+            IEnumerable<IEnumerable<string>> emptySet = new[] { Enumerable.Empty<string>() };
+
+            encounteredDefault = omitDefaults && Values.Any(v => v == v.Property.DefaultValue);
+
+            // accumulate the cross-product of all possible values
+            var allConfigSets = Values.Where(v => ShouldIncludeValue(v, omitDefaults, includeInsignificant))
+                                      .Aggregate(
+                                        emptySet,
+                                        (configSets, propertyValue) =>
+                                            configSets.SelectMany(configSet =>
+                                            propertyValue.AllValues.Select(valueString =>
+                                                configSet.Concat(new[] { valueString })
+                                            )));
+
+            // convert into configuration string
+            return allConfigSets.Select(configSet => string.Join(ConfigurationFactory.PropertySeperator.ToString(), configSet));
+        }
+
+        private bool ShouldIncludeValue(PropertyValue value, bool allowDefaults, bool includeInsignificant)
+        {
+            if (value.Property.Independent)
+            {
+                // skip independent properties
+                return false;
+            }
+
+            if (allowDefaults && value == value.Property.DefaultValue)
+            {
+                return false;
+            }
+
+            if (!includeInsignificant && value.Property.Insignificant)
+            {
+                // skip insignificant properties
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -98,11 +139,15 @@ namespace Microsoft.DotNet.Build.Tasks
             {
                 var encounteredDefault = false;
 
-                yield return GetConfigurationString(allowDefaults, includeInsignificant, out encounteredDefault);
+                foreach (var configurationString in GetConfigurationStringsWithAliases(allowDefaults, includeInsignificant, out encounteredDefault))
+                {
+                    yield return configurationString;
+                }
+
                 if (!encounteredDefault)
                 {
                     // if we didn't encounter a default value don't bother with
-                    // another pass since it will produce the same string.
+                    // another pass since it will produce the same strings.
                     break;
                 }
             }
@@ -121,7 +166,7 @@ namespace Microsoft.DotNet.Build.Tasks
         public string GetDefaultConfigurationString()
         {
             var unused = false;
-            return GetConfigurationString(allowDefaults: true, includeInsignificant: true, encounteredDefault: out unused);
+            return GetConfigurationString(omitDefaults: true, includeInsignificant: true, encounteredDefault: out unused);
         }
 
         public override bool Equals(object obj)

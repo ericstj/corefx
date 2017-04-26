@@ -19,16 +19,19 @@ namespace Microsoft.DotNet.Build.Tasks
     public class PropertyValue
     {
         private const string PropertyName = "Property";
+        private const string AliasesName = "Aliases";
         private const string ImportsName = "Imports";
         private const string CompatibleWithName = "CompatibleWith";
 
-        private static string[] s_excludedMetadata = new[] { PropertyName, ImportsName, CompatibleWithName };
+        private static string[] s_excludedMetadata = new[] { PropertyName, ImportsName, CompatibleWithName, AliasesName };
         private static char[] s_SplitChar = new[] { ';' };
 
         private string imports;
         private string compatibleWith;
 
         public KeyValuePair<string, string>[] AdditionalProperties { get; }
+
+        public IEnumerable<string> Aliases { get; private set; }
 
         public IEnumerable<PropertyValue> CompatibleValues { get; private set; }
 
@@ -37,6 +40,8 @@ namespace Microsoft.DotNet.Build.Tasks
         public PropertyInfo Property { get; }
 
         public string Value { get; }
+
+        public IEnumerable<string> AllValues { get; private set; }
 
         public PropertyValue(ITaskItem propertyValue, Dictionary<string, PropertyInfo> propertyNames)
         {
@@ -49,6 +54,18 @@ namespace Microsoft.DotNet.Build.Tasks
                 throw new Exception($"PropertyValue {Value} contained unknown property name \"{name}\"");
             }
             Property = property;
+
+            var aliases = propertyValue.GetMetadata(AliasesName);
+            var aliasesArray = string.IsNullOrEmpty(aliases) ? Array.Empty<string>() : aliases.Split(':');
+            Aliases = aliasesArray;
+
+            var allValues = new string[1 + aliasesArray.Length];
+            allValues[0] = Value;
+            for(int i = 0; i < aliasesArray.Length; i++)
+            {
+                allValues[i + 1] = aliasesArray[i];
+            }
+            AllValues = allValues;
 
             imports = propertyValue.GetMetadata(ImportsName);
             compatibleWith = propertyValue.GetMetadata(CompatibleWithName);
@@ -64,6 +81,8 @@ namespace Microsoft.DotNet.Build.Tasks
         {
             Value = value;
             Property = property;
+            Aliases = Array.Empty<string>();
+            AllValues = new[] { value };
             AdditionalProperties = new KeyValuePair<string, string>[0];
             CompatibleValues = Enumerable.Empty<PropertyValue>();
             ImportValues = Enumerable.Empty<PropertyValue>();

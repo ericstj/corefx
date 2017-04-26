@@ -94,11 +94,14 @@ namespace Microsoft.DotNet.Build.Tasks
 
                 foreach (var value in ConfigurationFactory.GetValues(property))
                 {
-                    var propertiesCondition = CreateContainsCondition(parsePropertyName, ConfigurationFactory.PropertySeperator + value.Value + ConfigurationFactory.PropertySeperator);
-                    var whenPropertiesElement = project.CreateWhenElement(propertiesCondition);
-                    choosePropertiesElement.AppendChild(whenPropertiesElement);
+                    foreach (var valueString in value.AllValues)
+                    {
+                        var propertiesCondition = CreateContainsCondition(parsePropertyName, ConfigurationFactory.PropertySeperator + valueString + ConfigurationFactory.PropertySeperator);
+                        var whenPropertiesElement = project.CreateWhenElement(propertiesCondition);
+                        choosePropertiesElement.AppendChild(whenPropertiesElement);
 
-                    AddProperties(whenPropertiesElement, value, includeAdditionalProperites, parsedValuePrefix);
+                        AddProperties(whenPropertiesElement, value, includeAdditionalProperites, parsedValuePrefix);
+                    }
                 }
 
                 if (property.Insignificant)
@@ -106,12 +109,15 @@ namespace Microsoft.DotNet.Build.Tasks
                     // for insignificant properties, don't overwrite with default if already set, but derive values from it.
                     foreach (var value in ConfigurationFactory.GetValues(property))
                     {
-                        var propertiesCondition = $"'$({property.Name})' == '{value.Value}'";
-                        var whenPropertiesElement = project.CreateWhenElement(propertiesCondition);
-                        choosePropertiesElement.AppendChild(whenPropertiesElement);
+                        foreach (var valueString in value.AllValues)
+                        {
+                            var propertiesCondition = $"'$({property.Name})' == '{valueString}'";
+                            var whenPropertiesElement = project.CreateWhenElement(propertiesCondition);
+                            choosePropertiesElement.AppendChild(whenPropertiesElement);
 
-                        // only write additionalProperties since actual property is already set,.
-                        AddProperties(whenPropertiesElement, value, includeAdditionalProperites, parsedValuePrefix, includePropertyValue:false);
+                            // only write additionalProperties since actual property is already set,.
+                            AddProperties(whenPropertiesElement, value, includeAdditionalProperites, parsedValuePrefix, includePropertyValue: false);
+                        }
                     }
                 }
 
