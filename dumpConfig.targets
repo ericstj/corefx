@@ -1,0 +1,27 @@
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="Build">
+    <PropertyGroup>
+      <InfoFile>$(ProjectDir)\configurations.csv</InfoFile>
+      <HasPackage>false</HasPackage>
+      <HasPackage Condition="Exists('..\pkg\$(MSBuildProjectName).pkgproj')">true</HasPackage>
+
+    </PropertyGroup>
+    <ItemGroup>
+      <_configProperty Include="MSBuildProjectName;IsReferenceAssembly;HasPackage;TargetGroup;OSGroup;GeneratePlatformNotSupportedAssembly" />
+    </ItemGroup>
+
+    <CreateProperty Value="unset"
+                    Condition="'$(%(_configProperty.Identity))' == ''">
+      <Output TaskParameter="Value" PropertyName="%(_configProperty.Identity)" />
+    </CreateProperty>
+
+    <ItemGroup>
+      <_configValue Include="$(%(_configProperty.Identity))" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(InfoFile)"
+                      Lines="@(_configProperty->'%(Identity)', ',')"
+                      Condition="!Exists('$(InfoFile)')" />
+    <WriteLinesToFile File="$(InfoFile)"
+                      Lines="@(_configValue->'%(Identity)', ',')" />
+  </Target>
+</Project>

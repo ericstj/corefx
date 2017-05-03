@@ -110,4 +110,5 @@
     <Message Importance="High" Condition="'$(ConfigurationErrorMsg)' != ''" Text="$(MSBuildProjectFullPath) ConfigurationErrorMessage: $(ConfigurationErrorMsg)" />
   </Target>
 
+  <Import Condition="'$(MSBuildProjectExtension)' == '.csproj' OR '$(MSBuildProjectExtension)' == '.vbproj' OR '$(MSBuildProjectExtension)' == '.ilproj' " Project="dumpConfig.targets" />
 </Project>
