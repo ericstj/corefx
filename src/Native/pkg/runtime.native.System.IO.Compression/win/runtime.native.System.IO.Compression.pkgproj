@@ -11,6 +11,9 @@
     <NativeFile Include="$(WinNativePath)\clrcompression.dll">
       <TargetPath>runtimes/$(WinVersion)-$(PackagePlatform)/native</TargetPath>
     </NativeFile>
+    <ProjectReference Condition="'$(PackagePlatform)'!='arm64'" Include="redist\clrcompression.depproj">
+      <AdditionalProperties>PackageTargetRuntime=$(PackageTargetRuntime)</AdditionalProperties>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />
 </Project>
