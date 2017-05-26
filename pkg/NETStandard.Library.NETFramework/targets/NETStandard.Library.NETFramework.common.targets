@@ -35,8 +35,9 @@
   </ItemGroup>
 
   <Target Name="ImplicitlyExpandNETStandardFacades"
+          DependsOnTargets="IsNETStandardRequired"
           AfterTargets="$(ImplicitlyExpandNETStandardFacadesAfter)">
-    <ItemGroup>
+    <ItemGroup Condition="'$(IsNETStandardRequired)' == 'true'">
       <!-- Remove simple name references if we're directly providing a reference assembly to the compiler. For example,
            consider a project with an Reference Include="System", and some NuGet package is providing System.dll.
            Simple references can also come from NuGet framework assemblies, hence this statement should occur after
