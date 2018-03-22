@@ -4,6 +4,7 @@
     <BuildConfigurations>
       netstandard;
       netstandard1.1;
+      net45;
     </BuildConfigurations>
   </PropertyGroup>
 </Project>
