@@ -5,6 +5,7 @@
     <AssemblyVersion>4.0.3.0</AssemblyVersion>
     <StrongNameKeyId>Microsoft</StrongNameKeyId>
     <IsNETCoreApp>true</IsNETCoreApp>
+    <IsNETCoreAppRef>false</IsNETCoreAppRef> 
     <IsUAP>true</IsUAP>
   </PropertyGroup>
 </Project>

@@ -47,6 +47,7 @@
         System.Private.Uri;
         System.Private.Xml;
         System.Private.Xml.Linq;
+        System.Runtime.InteropServices.WindowsRuntime;
         System.Runtime.WindowsRuntime;
         System.Runtime.WindowsRuntime.UI.Xaml;
         System.Security.AccessControl;
