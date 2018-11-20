@@ -43,9 +43,6 @@
     </File>
 
     <InboxOnTargetFramework Include="net45" />
-    <InboxOnTargetFramework Include="net451" />
-    <InboxOnTargetFramework Include="net461" />
-
     <InboxOnTargetFramework Include="uap10.0.16299" />
     <InboxOnTargetFramework Include="portable-win8+wp8+wpa81" />
     <InboxOnTargetFramework Include="win8" />
