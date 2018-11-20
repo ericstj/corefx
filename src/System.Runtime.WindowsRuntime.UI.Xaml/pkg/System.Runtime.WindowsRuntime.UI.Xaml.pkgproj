@@ -9,7 +9,7 @@
 
     <HarvestIncludePaths Include="ref/netcore50" />
     <HarvestIncludePaths Include="ref/netstandard1.1">
-      <SupportedFramework>netcore45;wpa81;net45;netcoreapp1.0</SupportedFramework>
+      <SupportedFramework>net451;netcore45;wpa81;netcoreapp1.0</SupportedFramework>
     </HarvestIncludePaths>
 
     <!-- we've previously shipped higer netstandard reference assembly version,
@@ -35,10 +35,30 @@
     <File Include="$(PlaceHolderFile)">
       <TargetPath>runtimes/win/lib/uap10.0.16299</TargetPath>
     </File>
+
+    <InboxOnTargetFramework Include="net451" />
+    <InboxOnTargetFramework Include="net461" />
+
     <InboxOnTargetFramework Include="uap10.0.16299" />
     <InboxOnTargetFramework Include="portable-win8+wpa81" />
     <InboxOnTargetFramework Include="win8" />
     <InboxOnTargetFramework Include="wpa81" />
+
+    <PackageFile Include=".\build\net45\System.Runtime.WindowsRuntime.UI.Xaml.targets">
+      <TargetPath>\build\net45\</TargetPath>
+    </PackageFile>
+    <PackageFile Include=".\build\net451\System.Runtime.WindowsRuntime.UI.Xaml.targets">
+      <TargetPath>\build\net451\</TargetPath>
+    </PackageFile>
+    <PackageFile Include=".\build\net461\System.Runtime.WindowsRuntime.UI.Xaml.targets">
+      <TargetPath>\build\net461\</TargetPath>
+    </PackageFile>
+
+    <!-- This package is not supported on .NET Standard 1.0 or .NET FX 4.5 -->
+    <ValidatePackageSuppression Include="PermitImplementation">
+      <Value>.NETFramework,Version=v4.5;.NETFramework,Version=v4.5/win-x86;.NETFramework,Version=v4.5/win-x64</Value>
+    </ValidatePackageSuppression>
+
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Directory.Build.targets))\Directory.Build.targets" />
 </Project> 
