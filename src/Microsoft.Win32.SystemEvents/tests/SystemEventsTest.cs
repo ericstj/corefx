@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.ComponentModel;
 using System.Threading;
 using Xunit;
 using static Interop;
@@ -34,13 +35,16 @@ namespace Microsoft.Win32.SystemEventsTests
                 }
 
                 // locate the hwnd used by SystemEvents in this domain
-                var windowClassNameField = typeof(SystemEvents).GetField("s_className", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ??  // corefx
-                                           typeof(SystemEvents).GetField("className", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);      // desktop
-                Assert.NotNull(windowClassNameField);
-                var windowClassName = windowClassNameField.GetValue(null) as string;
-                Assert.NotNull(windowClassName);
+                var systemEventsField = typeof(SystemEvents).GetField("s_systemEvents", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic) ??  // corefx
+                                        typeof(SystemEvents).GetField("systemEvents", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);      // desktop
+                Assert.NotNull(systemEventsField);
+                var systemEventsInstance = systemEventsField.GetValue(null);
+                Assert.NotNull(systemEventsInstance);
 
-                s_hwnd = User32.FindWindowW(windowClassName, null);
+                var windowHandleField = typeof(SystemEvents).GetField("_windowHandle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic) ??  // corefx
+                                        typeof(SystemEvents).GetField("windowHandle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);     // desktop
+                Assert.NotNull(windowHandleField);
+                s_hwnd = (IntPtr)windowHandleField.GetValue(systemEventsInstance);
                 Assert.NotEqual(s_hwnd, IntPtr.Zero);
             }
         }

@@ -10,9 +10,6 @@
     <Compile Include="$(CommonPath)\Interop\Windows\user32\Interop.Constants.cs">
       <Link>Common\Interop\Windows\user32\Interop.Constants.cs</Link>
     </Compile>
-    <Compile Include="$(CommonPath)\Interop\Windows\user32\Interop.FindWindow.cs">
-      <Link>Common\Interop\Windows\user32\Interop.FindWindow.cs</Link>
-    </Compile>
     <Compile Include="$(CommonPath)\Interop\Windows\user32\Interop.SendMessage.cs">
       <Link>Common\Interop\Windows\user32\Interop.SendMessage.cs</Link>
     </Compile>
