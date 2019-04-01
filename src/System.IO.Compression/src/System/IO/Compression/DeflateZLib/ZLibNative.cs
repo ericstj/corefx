@@ -69,7 +69,11 @@ namespace System.IO.Compression
         {
             NoCompression = 0,
             BestSpeed = 1,
-            DefaultCompression = -1
+            DefaultCompression = -1,
+
+            Test6medium = 6,
+            Test6slow = 7,  // temporary mapping for test
+            Test9slow = 9
         }
 
         /// <summary>

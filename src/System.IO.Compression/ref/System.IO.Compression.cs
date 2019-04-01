@@ -12,6 +12,9 @@ namespace System.IO.Compression
         Fastest = 1,
         NoCompression = 2,
         Optimal = 0,
+        Test6medium = 3,
+        Test6slow = 4,
+        Test9slow = 5
     }
     public enum CompressionMode
     {

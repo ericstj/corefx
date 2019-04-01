@@ -38,6 +38,19 @@ namespace System.IO.Compression
             switch (compressionLevel)
             {
                 // See the note in ZLibNative.CompressionLevel for the recommended combinations.
+                case CompressionLevel.Test6medium:
+                    zlibCompressionLevel = ZLibNative.CompressionLevel.Test6medium;
+                    memLevel = ZLibNative.Deflate_DefaultMemLevel;
+                    break;
+                case CompressionLevel.Test6slow:
+                    zlibCompressionLevel = ZLibNative.CompressionLevel.Test6slow;
+                    memLevel = ZLibNative.Deflate_DefaultMemLevel;
+                    break;
+                case CompressionLevel.Test9slow:
+                    zlibCompressionLevel = ZLibNative.CompressionLevel.Test9slow;
+                    memLevel = ZLibNative.Deflate_DefaultMemLevel;
+                    break;
+
 
                 case CompressionLevel.Optimal:
                     zlibCompressionLevel = ZLibNative.CompressionLevel.DefaultCompression;

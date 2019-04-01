@@ -141,7 +141,7 @@ local const config configuration_table[10] = {
 /* 6 */ {8,   16, 128, 128, deflate_slow},
 #endif
 
-/* 7 */ {8,   32, 128, 256, deflate_slow},
+/* 7 */ {8,   16, 128, 128, deflate_slow},  // actually 6:slow
 /* 8 */ {32, 128, 258, 1024, deflate_slow},
 /* 9 */ {32, 258, 258, 4096, deflate_slow}}; /* max compression */
 #endif

@@ -14,6 +14,9 @@ namespace System.IO.Compression
     {
         Optimal = 0,
         Fastest = 1,
-        NoCompression = 2
+        NoCompression = 2,
+        Test6medium = 3,
+        Test6slow = 4,
+        Test9slow = 5
     }
 }
