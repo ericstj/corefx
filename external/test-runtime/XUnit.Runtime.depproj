@@ -34,7 +34,7 @@
     <PackageReference Include="xunit" Version="$(XUnitPackageVersion)" />
     <PackageReference Condition="'$(TargetsAot)' == 'true'" Include="xunit.runner.utility" Version="$(XUnitPackageVersion)" />
     <PackageReference Include="$(MicrosoftDotNetXUnitExtensionsPackage)" Version="$(MicrosoftDotNetXUnitExtensionsPackageVersion)" />
-    <PackageReference Include="$(MicrosoftDotNetRemoteExecutorPackage)" Version="$(MicrosoftDotNetRemoteExecutorPackageVersion)" />
+    <PackageReference Include="$(MicrosoftDotNetRemoteExecutorPackage)" Version="$(MicrosoftDotNetRemoteExecutorPackageVersion)" ExcludeAssets="None" />
     <PackageReference Condition="'$(TargetsNetCoreApp)' == 'true'" Include="$(MicrosoftDotNetXUnitConsoleRunnerPackage)" Version="$(MicrosoftDotNetXUnitConsoleRunnerPackageVersion)" />
     <PackageReference Condition="'$(TargetsNetFx)' == 'true'" Include="$(XUnitRunnerConsolePackageName)" Version="$(XUnitPackageVersion)" />
     <PackageReference Condition="'$(TargetsUap)' == 'true'" Include="$(MicrosoftDotNetUapTestToolsPackageName)" Version="$(MicrosoftDotNetUapTestToolsPackageVersion)" />
@@ -88,7 +88,14 @@
     <PackageToInclude Condition="'$(TargetsNetCoreApp)' == 'true'" Include="Microsoft.Extensions.DependencyModel" />
     <PackageToInclude Condition="'$(TargetsNetCoreApp)' == 'true' OR '$(TargetsNetFx)' == 'true'" Include="Microsoft.CodeCoverage" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <AdditionalBinPlaceConfiguration Include="$(Configuration)">
+      <ItemName>ReferencePath</ItemName>
+      <!-- use RuntimePath since we don't want to enable all default RefPath binplacing for this project -->
+      <RuntimePath>$(RefPath)/test</RuntimePath>
+    </AdditionalBinPlaceConfiguration>
+  </ItemGroup>
   <!--
     Ensure that the native components of TraceEvent are restored into the testhost
     so that TraceEvent can pinvoke into them.

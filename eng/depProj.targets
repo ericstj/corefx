@@ -117,27 +117,38 @@ See the LICENSE file in the project root for more information.
           DependsOnTargets="ResolvePackageAssets"
           Condition="'@(PackageToInclude)' != '' OR '@(PackageToExclude)' != '' OR '@(FileToInclude)' != '' OR '@(FileToExclude)' != ''">
     <ItemGroup>
-      <_nuGetDeploy Include="@($(NuGetDeploySourceItem))"/>
-      <_nuGetDeployByFileName Include="@(_nuGetDeploy->'%(FileName)')">
+      <_referenceByFileName Include="@(Reference->'%(FileName)')">
         <OriginalItemSpec>%(Identity)</OriginalItemSpec>
-      </_nuGetDeployByFileName>
+      </_referenceByFileName>
 
-      <_nuGetDeployByFileNameToRemove Include="@(_nuGetDeployByFileName)" Exclude="@(FileToInclude)" Condition="'@(FileToInclude)' != ''" />
-      <_filteredNuGetDeployByFileName Include="@(_nuGetDeployByFileName)" Exclude="@(_nuGetDeployByFileNameToRemove);@(FileToExclude)" />
+      <_referenceByFileNameToRemove Include="@(_referenceByFileName)" Exclude="@(FileToInclude)" Condition="'@(FileToInclude)' != ''" />
+      <_filteredReferenceByFileName Include="@(_referenceByFileName)" Exclude="@(_referenceByFileNameToRemove);@(FileToExclude)" />
       
-      <_nuGetDeployByPackageId Include="@(_filteredNuGetDeployByFileName->'%(NuGetPackageId)')" />
+      <_referenceByPackageId Include="@(_filteredReferenceByFileName->'%(NuGetPackageId)')" />
 
-      <_nuGetDeployByPackageIdToRemove Include="@(_nuGetDeployByPackageId)" Exclude="@(PackageToInclude)" Condition="'@(PackageToInclude)' != ''" />
-      <_filteredNuGetDeployByPackageId Include="@(_nuGetDeployByPackageId)" Exclude="@(_nuGetDeployByPackageIdToRemove);@(PackageToExclude)" />
+      <_referenceByPackageIdToRemove Include="@(_referenceByPackageId)" Exclude="@(PackageToInclude)" Condition="'@(PackageToInclude)' != ''" />
+      <_filteredReferenceByPackageId Include="@(_referenceByPackageId)" Exclude="@(_referenceByPackageIdToRemove);@(PackageToExclude)" />
 
-      <ReferenceCopyLocalPaths Condition="'$(NuGetDeploySourceItem)' == 'ReferenceCopyLocalPaths'" Remove="@(ReferenceCopyLocalPaths)" />
-      <Reference Condition="'$(NuGetDeploySourceItem)' == 'Reference'" Remove="@(Reference)" />
-      <Analyzer Condition="'$(NuGetDeploySourceItem)' == 'Analyzer'" Remove="@(Analyzer)" />
+      <Reference Remove="@(Reference)" />
+      <Reference Include="@(_filteredReferenceByPackageId->'%(OriginalItemSpec)')" />
     </ItemGroup>
-    
-    <CreateItem Include="@(_filteredNuGetDeployByPackageId->'%(OriginalItemSpec)')">
-      <Output TaskParameter="Include" ItemName="$(NuGetDeploySourceItem)" />
-    </CreateItem>
+
+    <ItemGroup>
+      <_referenceCopyLocalPathsByFileName Include="@(ReferenceCopyLocalPaths->'%(FileName)')">
+        <OriginalItemSpec>%(Identity)</OriginalItemSpec>
+      </_referenceCopyLocalPathsByFileName>
+
+      <_referenceCopyLocalPathsByFileNameToRemove Include="@(_referenceCopyLocalPathsByFileName)" Exclude="@(FileToInclude)" Condition="'@(FileToInclude)' != ''" />
+      <_filteredReferenceCopyLocalPathsByFileName Include="@(_referenceCopyLocalPathsByFileName)" Exclude="@(_referenceCopyLocalPathsByFileNameToRemove);@(FileToExclude)" />
+      
+      <_referenceCopyLocalPathsByPackageId Include="@(_filteredReferenceCopyLocalPathsByFileName->'%(NuGetPackageId)')" />
+
+      <_referenceCopyLocalPathsByPackageIdToRemove Include="@(_referenceCopyLocalPathsByPackageId)" Exclude="@(PackageToInclude)" Condition="'@(PackageToInclude)' != ''" />
+      <_filteredReferenceCopyLocalPathsByPackageId Include="@(_referenceCopyLocalPathsByPackageId)" Exclude="@(_referenceCopyLocalPathsByPackageIdToRemove);@(PackageToExclude)" />
+
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" />
+      <ReferenceCopyLocalPaths Include="@(_filteredReferenceCopyLocalPathsByPackageId->'%(OriginalItemSpec)')" />
+    </ItemGroup>
   </Target>
 
 </Project>
