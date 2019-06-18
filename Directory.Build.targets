@@ -119,6 +119,7 @@
   <Import Project="$(RepositoryEngineeringDir)depProj.targets" Condition="'$(MSBuildProjectExtension)' == '.depproj'" />
   <Import Project="$(RepositoryEngineeringDir)references.targets" />
   <Import Project="$(RepositoryEngineeringDir)resolveContract.targets" />
+  <Import Project="$(RepositoryEngineeringDir)validateRef.targets" />
 
   <Import Sdk="Microsoft.DotNet.Build.Tasks.Configuration" Project="Sdk.targets" />
   <Import Sdk="Microsoft.DotNet.CoreFxTesting" Project="Sdk.targets"  />

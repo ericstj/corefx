@@ -1,0 +1,117 @@
+<Project>
+  <Target Name="_getLastCompatibleAssembly" DependsOnTargets="_getAllBuildConfigurations">
+    <!-- find next best configuation, then fetch the file path & version -->
+    <ItemGroup>
+      <_otherBuildConfigurations Include="@(_buildConfigurations)" Exclude="$(Configuration)" />
+    </ItemGroup>
+
+    <!-- Find the next-best configuration current project -->
+    <FindBestConfigurations Properties="@(Property)"
+                            PropertyValues="@(PropertyValue)"
+                            SupportedConfigurations="@(_otherBuildConfigurations)"
+                            Configurations="$(Configuration)">
+      <Output TaskParameter="BestConfigurations" PropertyName="_nextBestConfiguration" />
+    </FindBestConfigurations>
+
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Properties="Configuration=$(_nextBestConfiguration)"
+             Condition="'$(_nextBestConfiguration)' != ''" >
+             <!-- Targets="GetTargetPath"> -->
+      <Output TaskParameter="TargetOutputs" ItemName="LastCompatibleAssembly" />
+    </MSBuild>
+  </Target>
+
+  <Target Name="_compareCompatibleAssembly" Condition="'@(LastCompatibleAssembly)' != ''">
+    <GetAssemblyIdentity AssemblyFiles="@(LastCompatibleAssembly)">
+      <Output TaskParameter="Assemblies" ItemName="LastCompatibleAssemblyIdentity" />
+    </GetAssemblyIdentity>
+    
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="CurrentAssemblyIdentity" />
+    </GetAssemblyIdentity>
+    
+    <PropertyGroup>
+      <LastAssemblyVersion>%(LastCompatibleAssemblyIdentity.Version)</LastAssemblyVersion>
+      <CurrentAssemblyVersion>%(CurrentAssemblyIdentity.Version)</CurrentAssemblyVersion>
+    </PropertyGroup>
+    
+    <Error Condition="$(LastAssemblyVersion) &gt; $(CurrentAssemblyVersion)"
+           Text="Downgrade between compatible assemblies.  Compatible assembly '@(LastCompatibleAssembly)' has higher version ($(LastAssemblyVersion)) than current assembly '$(TargetPath)' ($(CurrentAssemblyVersion))." />
+    <ItemGroup>
+      <!-- Remove duplicate directories by batching over them -->
+      <!-- Add project references first to give precedence to project-specific files -->
+      <_ReferencePathDirs Condition="'%(ReferencePath.ReferenceSourceTarget)' == 'ProjectReference'" Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)" />
+      <_ReferencePathDirs Condition="'%(ReferencePath.ReferenceSourceTarget)' != 'ProjectReference'" Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)" />
+    </ItemGroup>
+    
+    <!-- Always require LastCompatibleAssembly to be compatible with this assembly -->
+    <PropertyGroup>
+      <PrevApiCompatArgs>$(PrevApiCompatArgs) "@(LastCompatibleAssembly)"</PrevApiCompatArgs>
+      <PrevApiCompatArgs>$(PrevApiCompatArgs) --contract-depends "@(_ReferencePathDirs, ','),"</PrevApiCompatArgs>
+      <PrevApiCompatArgs>$(PrevApiCompatArgs) --left-operand compatible-assembly</PrevApiCompatArgs>
+      <PrevApiCompatArgs>$(PrevApiCompatArgs) --right-operand this-assembly</PrevApiCompatArgs>
+      <PrevApiCompatArgs>$(PrevApiCompatArgs) --impl-dirs "$(TargetDir),@(_ReferencePathDirs, ','),"</PrevApiCompatArgs>
+      <PrevApiCompatResponseFile>$(IntermediateOutputPath)PrevApiCompat.rsp</PrevApiCompatResponseFile>
+    </PropertyGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(PrevApiCompatResponseFile)" Lines="$(PrevApiCompatArgs)" Overwrite="true" />
+    
+    <Exec Command="$(_ApiCompatCommand) @&quot;$(PrevApiCompatResponseFile)&quot;"
+          CustomErrorRegularExpression="^[a-zA-Z]+ :"
+          StandardOutputImportance="Low" />
+    
+    <PropertyGroup>
+      <ReversePrevApiCompatArgs>$(ReversePrevApiCompatArgs) "$(TargetPath)"</ReversePrevApiCompatArgs>
+      <ReversePrevApiCompatArgs>$(ReversePrevApiCompatArgs) --contract-depends "@(_ReferencePathDirs, ','),"</ReversePrevApiCompatArgs>
+      <ReversePrevApiCompatArgs>$(ReversePrevApiCompatArgs) --left-operand this-assembly</ReversePrevApiCompatArgs>
+      <ReversePrevApiCompatArgs>$(ReversePrevApiCompatArgs) --right-operand compatible-assembly</ReversePrevApiCompatArgs>
+      <ReversePrevApiCompatArgs>$(ReversePrevApiCompatArgs) --impl-dirs "@(LastCompatibleAssembly->'%(RootDir)%(Directory)', ','),@(_ReferencePathDirs, ','),"</ReversePrevApiCompatArgs>
+      <ReversePrevApiCompatResponseFile>$(IntermediateOutputPath)ReversePrevApiCompat.rsp</ReversePrevApiCompatResponseFile>
+    </PropertyGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(ReversePrevApiCompatResponseFile)" Lines="$(ReversePrevApiCompatArgs)" Overwrite="true" />
+
+    <Exec Command="$(_ApiCompatCommand) @&quot;$(ReversePrevApiCompatResponseFile)&quot;"
+          StandardOutputImportance="Low"
+          IgnoreExitCode="true"
+          IgnoreStandardErrorWarningFormat="true"
+          ConsoleToMsBuild="true">
+      <Output TaskParameter="ExitCode" PropertyName="ReversePrevApiCompatExitCode" />
+      <Output TaskParameter="ConsoleOutput" ItemName="ReversePrevApiCompatConsoleOutput" />
+    </Exec>
+
+    <!-- Same version, expect no API difference, suppressible error about redundant assembly -->
+    <Error Condition="'$(LastAssemblyVersion)' == '$(CurrentAssemblyVersion)' and '$(ReversePrevApiCompatExitCode)' != '0'"
+           Text="Compatible assembly '@(LastCompatibleAssembly)' has same version as current assembly '$(TargetPath)' but different API.%0a  API Differences:%0a @(ReversePrevApiCompatConsoleOutput, '%0a')" />
+
+    <GetAssemblyReferences Assemblies="$(TargetPath)">
+      <Output TaskParameter="ReferencedAssemblies" ItemName="CurrentAssemblyReferences" />
+      <Output TaskParameter="ReferencedAssemblies" ItemName="CurrentAssemblyReferences" />
+    </GetAssemblyReferences>
+    <GetAssemblyReferences Assemblies="@(LastCompatibleAssembly)">
+      <Output TaskParameter="ReferencedAssemblies" ItemName="LastAssemblyReferences" />
+      <Output TaskParameter="ReferencedAssemblies" ItemName="LastAssemblyReferences" />
+    </GetAssemblyReferences>
+
+    <PropertyGroup Condition="'$(PermitRedundantCompatibleAssembly)' == ''">
+      <!-- TODO: versionless TargetGroup can be redundant -->
+      
+      <!-- permit redundant assembly if assembly refs differ or PINvokes differ -->
+      <PermitRedundantCompatibleAssembly Condition="'@(CurrentAssemblyReferences)' != '@(LastAssemblyReferences)'">true</PermitRedundantCompatibleAssembly>
+    </PropertyGroup>
+
+    <!-- It might be better to see if we could check for "significant" differences to automatically allow redundancies.
+         Significant differences would be different references, different PInvokes, different type forwards  -->
+    <Error Condition="'$(PermitRedundantCompatibleAssembly)' != 'true' and '$(LastAssemblyVersion)' == '$(CurrentAssemblyVersion)'"
+           Text="Possible redundant assemblies.  Compatible assembly '@(LastCompatibleAssembly)' has same version as current assembly '$(TargetPath)'.  This can be suppressed using PermitRedundantCompatibleAssembly=true." />
+
+    <!-- Higher version, expect API difference, but permit suppression -->
+    <Error Condition="'$(PermitVersionedCompatibleAssembly)' != 'true' and '$(LastAssemblyVersion)' &lt; '$(CurrentAssemblyVersion)' and '$(ReversePrevApiCompatExitCode)' == '0'"
+           Text="Possible unnecessary versioned assembly.  Compatible assembly '@(LastCompatibleAssembly)' has lower version than current assembly '$(TargetPath)' but same API.  This can be suppressed using PermitVersionedCompatibleAssembly=true." />
+  </Target>
+
+  <Target Name="CompareCompatibleAssembly"
+          DependsOnTargets="_getLastCompatibleAssembly;_compareCompatibleAssembly"
+          BeforeTargets="AfterBuild"
+          Condition="'$(BuildAllConfigurations)' == 'true'" />
+</Project>
