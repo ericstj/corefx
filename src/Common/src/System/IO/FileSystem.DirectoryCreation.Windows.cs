@@ -18,6 +18,18 @@ namespace System.IO
 {
     internal static partial class FileSystem
     {
+        /// <summary>
+        /// Returns true if the path ends in a directory separator.
+        /// </summary>
+        internal static bool EndsInDirectorySeparator(ReadOnlySpan<char> path)
+            => path.Length > 0 && PathInternal.IsDirectorySeparator(path[path.Length - 1]);
+
+        /// <summary>
+        /// Returns true if the path ends in a directory separator.
+        /// </summary>
+        public static bool EndsInDirectorySeparator(string path)
+              => !string.IsNullOrEmpty(path) && PathInternal.IsDirectorySeparator(path[path.Length - 1]);
+
         public static unsafe void CreateDirectory(string fullPath, byte[] securityDescriptor = null)
         {
             // We can save a bunch of work if the directory we want to create already exists.  This also
@@ -42,7 +54,7 @@ namespace System.IO
             int length = fullPath.Length;
 
             // We need to trim the trailing slash or the code will try to create 2 directories of the same name.
-            if (length >= 2 && Path.EndsInDirectorySeparator(fullPath.AsSpan()))
+            if (length >= 2 && EndsInDirectorySeparator(fullPath.AsSpan()))
             {
                 length--;
             }

@@ -46,6 +46,25 @@ namespace System.IO
         }
 
         /// <summary>
+        /// Trims one trailing directory separator beyond the root of the path.
+        /// </summary>
+        private static string TrimEndingDirectorySeparator(string path) =>
+            EndsInDirectorySeparator(path) && !IsRoot(path.AsSpan()) ?
+                path.Substring(0, path.Length - 1) :
+                path;
+
+        /// <summary>
+        /// Trims one trailing directory separator beyond the root of the path.
+        /// </summary>
+        private static ReadOnlySpan<char> TrimEndingDirectorySeparator(ReadOnlySpan<char> path) =>
+            EndsInDirectorySeparator(path) && !IsRoot(path) ?
+                path.Slice(0, path.Length - 1) :
+                path;
+
+        private static bool IsRoot(ReadOnlySpan<char> path)
+            => path.Length == PathInternal.GetRootLength(path);
+
+        /// <summary>
         /// Returns 0 on success, otherwise a Win32 error code.  Note that
         /// classes should use -1 as the uninitialized state for dataInitialized.
         /// </summary>
@@ -57,7 +76,7 @@ namespace System.IO
             int errorCode = Interop.Errors.ERROR_SUCCESS;
 
             // Neither GetFileAttributes or FindFirstFile like trailing separators
-            path = Path.TrimEndingDirectorySeparator(path);
+            path = TrimEndingDirectorySeparator(path);
 
             using (DisableMediaInsertionPrompt.Create())
             {
